@@ -23,7 +23,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class OrderService {
 
 	private final OrderRepository orderrepository;
-	private final WebClient webClient;
+	private final WebClient.Builder webClientBuilder;
 
 	public void placeOrder(Orderrequest orderrequest) {
 		Orders order = new Orders();
@@ -35,8 +35,8 @@ public class OrderService {
 		List<String> skuCodes = order.getOrderLineItemList().stream().map(OrderLineItems::getSkuCode).toList();
 
 		// Call the inventory service to check if the items are in stock
-		InventoryResponseDto[] inventoryResponseArray = webClient.get()
-				.uri(
+		InventoryResponseDto[] inventoryResponseArray = webClientBuilder.build().get()
+				.uri("http://inventory-service/api/inventory",
 						uriBuilder -> uriBuilder
 								.path("/api/inventory/check")
 								.queryParam("skuCode", skuCodes)
